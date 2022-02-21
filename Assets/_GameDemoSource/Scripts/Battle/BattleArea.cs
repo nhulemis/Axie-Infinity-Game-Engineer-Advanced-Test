@@ -5,14 +5,24 @@ using UnityEngine;
 
 public class BattleArea : MonoBehaviour
 {
+    [Header("Init Hex-Grid")]
     [SerializeField] Transform circlePrefab;
     [SerializeField] float gap;
     [SerializeField] int battleRadius = 11;
+    [SerializeField] Transform gridParent;
     int gridWidth, gridHeight;
     int seatsOnRow;
     Vector2 startPos;
     Vector2 circleSize;
 
+    [Header("Team Attack")]
+    [SerializeField] Transform attackParent;
+
+
+    [Header("Team Defense")]
+    [SerializeField] Transform defenseParent;
+
+    [HideInInspector]
     public List<HexCircle> circlesPool;
 
     // Start is called before the first frame update
@@ -32,9 +42,9 @@ public class BattleArea : MonoBehaviour
 
     }
 
-    private void NewCircle(int x , int y, Vector2 pos)
+    private void NewCircle(int x, int y, Vector2 pos)
     {
-        var go = Instantiate<Transform>(circlePrefab, transform);
+        var go = Instantiate<Transform>(circlePrefab, gridParent);
         var circle = go.GetComponent<HexCircle>();
         circle.transform.position = pos;
         circle.name = x + " | " + y;
@@ -54,7 +64,7 @@ public class BattleArea : MonoBehaviour
 
                     if (y == gridHeight / 2)
                     {
-                        if ( x == gridWidth - 1)
+                        if (x == gridWidth - 1)
                         {
                             CalcPosition(x + 1, y, out pos);
                             NewCircle(x + 1, y, pos);
@@ -77,13 +87,12 @@ public class BattleArea : MonoBehaviour
         }
     }
 
-    bool CalcPosition(int x, int y, out Vector2 pos , bool forcePos = false)
+    bool CalcPosition(int x, int y, out Vector2 pos, bool forcePos = false)
     {
         pos = Vector2.negativeInfinity;
 
         var ignoreL = (gridWidth - seatsOnRow) / 2;
         var ignoreR = seatsOnRow + ignoreL + 1;
-        Debug.Log(gridWidth - seatsOnRow);
         if ((x <= ignoreL || x >= ignoreR) && gridWidth - seatsOnRow != 0 && !forcePos)
         {
             return false;
@@ -119,52 +128,106 @@ public class BattleArea : MonoBehaviour
         startPos = new Vector2(x, z);
     }
 
-    public List<HexCircle> GetNearCircle(Point p)
+    public List<HexCircle> GetNearCircle(Point p, int takeRadius = 1)
     {
         foreach (var item in circlesPool)
         {
             item.GetComponent<SpriteRenderer>().color = Color.white;
         }
-        return GetNearCircle(p.x, p.y);
+
+        return GetNearCircle(p.x, p.y, takeRadius);
     }
 
-    public List<HexCircle> GetNearCircle(int x, int y)
+    private List<HexCircle> GetNearCircle(int x, int y, int takeRadius)
     {
-        var tempList = circlesPool.Where(obj=>obj.PointIndex.x == x && obj.PointIndex.y == y).ToList();
+        var diameter = takeRadius * 2 + 1;
 
-        var left = circlesPool.Find(obj => obj.PointIndex.x == x - 1 && obj.PointIndex.y == y);
-        var right = circlesPool.Find(obj => obj.PointIndex.x == x + 1 && obj.PointIndex.y == y);
+        var startX = x - takeRadius; // move to the left of this row
 
-        if (left != null)
-            tempList.Add(left);
-        if (right != null)
-            tempList.Add(right);
-
-        int offset = -1;
-        if (y % 2 == 0)
+        var tempList = new List<HexCircle>();
+        int coutOffet = 0;
+        for (int t = 0; t < takeRadius + 1; t++)
         {
-            offset = 1;
+            if (t == 0)// get row at middle first
+            {
+                PickupCircleInRow(startX, y, diameter, ref tempList);
+            }
+            else
+            {
+                coutOffet++;
+                if (coutOffet == 3)
+                {
+                    if (y % 2 != 0)
+                        startX -= 1;
+                    else
+                        startX += 1;
+                    coutOffet = 1;
+
+                }
+
+                int offset = 0;
+                if (y % 2 == 0)
+                    offset = 1;
+
+                PickupCircleInRow(startX + offset, y + t, diameter, ref tempList);
+                PickupCircleInRow(startX + offset, y - t, diameter, ref tempList);
+
+                if (y % 2 == 1)
+                    startX++;
+            }
+            diameter--;
         }
-
-        //2 top
-        var upperLeft = circlesPool.Find(obj => obj.PointIndex.x == x + offset && obj.PointIndex.y == y - 1);
-        var upperRight = circlesPool.Find(obj => obj.PointIndex.x == x  && obj.PointIndex.y == y -1);
-
-        if (upperLeft != null)
-            tempList.Add(upperLeft);
-        if (upperRight != null)
-            tempList.Add(upperRight);
-
-        //2 bottom
-        var lowwerLeft = circlesPool.Find(obj => obj.PointIndex.x == x + offset && obj.PointIndex.y == y + 1);
-        var lowwerRight = circlesPool.Find(obj => obj.PointIndex.x == x && obj.PointIndex.y == y + 1);
-
-        if (lowwerLeft != null)
-            tempList.Add(lowwerLeft);
-        if (lowwerRight != null)
-            tempList.Add(lowwerRight);
 
         return tempList;
     }
+
+    private void PickupCircleInRow(int startX, int y, int diameter, ref List<HexCircle> tempList)
+    {
+        for (int i = 0; i < diameter; i++)
+        {
+            var pick = circlesPool.Find(obj => obj.PointIndex.x == startX + i && obj.PointIndex.y == y);
+            if (pick != null)
+                tempList.Add(pick);
+        }
+    }
+
+    //public List<HexCircle> GetNearCircle(int x, int y)
+    //{
+    //    var tempList = circlesPool.Where(obj => obj.PointIndex.x == x && obj.PointIndex.y == y).ToList();
+
+    //    var left = circlesPool.Find(obj => obj.PointIndex.x == x - 1 && obj.PointIndex.y == y);
+    //    var right = circlesPool.Find(obj => obj.PointIndex.x == x + 1 && obj.PointIndex.y == y);
+
+    //    if (left != null)
+    //        tempList.Add(left);
+    //    if (right != null)
+    //        tempList.Add(right);
+
+    //    int offset = -1;
+    //    if (y % 2 == 0)
+    //    {
+    //        offset = 1;
+    //    }
+
+    //    //2 top
+    //    var upperLeft = circlesPool.Find(obj => obj.PointIndex.x == x + offset && obj.PointIndex.y == y - 1);
+    //    var upperRight = circlesPool.Find(obj => obj.PointIndex.x == x && obj.PointIndex.y == y - 1);
+
+    //    if (upperLeft != null)
+    //        tempList.Add(upperLeft);
+    //    if (upperRight != null)
+    //        tempList.Add(upperRight);
+
+    //    //2 bottom
+    //    var lowwerLeft = circlesPool.Find(obj => obj.PointIndex.x == x + offset && obj.PointIndex.y == y + 1);
+    //    var lowwerRight = circlesPool.Find(obj => obj.PointIndex.x == x && obj.PointIndex.y == y + 1);
+
+    //    if (lowwerLeft != null)
+    //        tempList.Add(lowwerLeft);
+    //    if (lowwerRight != null)
+    //        tempList.Add(lowwerRight);
+
+    //    return tempList;
+    //}
 
 }

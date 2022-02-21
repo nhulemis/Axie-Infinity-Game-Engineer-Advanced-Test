@@ -7,12 +7,23 @@ using UnityEngine.EventSystems;
 public class HexCircle : MonoBehaviour
 {
     public Point PointIndex { get; set; }
+    [SerializeField] GameObject blur;
+
+    private void OnEnable()
+    {
+        Blur(true);
+    }
+
+    public void Blur(bool b)
+    {
+        blur.SetActive(b);
+    }
 
     public void OnPointerDown()
     {
         var battle = FindObjectOfType<BattleArea>();
 
-       var connected =  battle.GetNearCircle(PointIndex);
+       var connected =  battle.GetNearCircle(PointIndex , 6);
 
         foreach (var item in connected)
         {
