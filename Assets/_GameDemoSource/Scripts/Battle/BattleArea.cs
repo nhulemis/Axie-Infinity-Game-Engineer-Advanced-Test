@@ -128,13 +128,17 @@ public class BattleArea : MonoBehaviour
         startPos = new Vector2(x, z);
     }
 
-    public List<HexCircle> GetNearCircle(Point p, int takeRadius = 1)
+    public void RefreshCircle()
     {
         foreach (var item in circlesPool)
         {
             item.GetComponent<SpriteRenderer>().color = Color.white;
+            item.SetBlur(true);
         }
+    }
 
+    public List<HexCircle> GetNearCircle(Point p, int takeRadius = 1)
+    {
         return GetNearCircle(p.x, p.y, takeRadius);
     }
 
@@ -190,44 +194,5 @@ public class BattleArea : MonoBehaviour
                 tempList.Add(pick);
         }
     }
-
-    //public List<HexCircle> GetNearCircle(int x, int y)
-    //{
-    //    var tempList = circlesPool.Where(obj => obj.PointIndex.x == x && obj.PointIndex.y == y).ToList();
-
-    //    var left = circlesPool.Find(obj => obj.PointIndex.x == x - 1 && obj.PointIndex.y == y);
-    //    var right = circlesPool.Find(obj => obj.PointIndex.x == x + 1 && obj.PointIndex.y == y);
-
-    //    if (left != null)
-    //        tempList.Add(left);
-    //    if (right != null)
-    //        tempList.Add(right);
-
-    //    int offset = -1;
-    //    if (y % 2 == 0)
-    //    {
-    //        offset = 1;
-    //    }
-
-    //    //2 top
-    //    var upperLeft = circlesPool.Find(obj => obj.PointIndex.x == x + offset && obj.PointIndex.y == y - 1);
-    //    var upperRight = circlesPool.Find(obj => obj.PointIndex.x == x && obj.PointIndex.y == y - 1);
-
-    //    if (upperLeft != null)
-    //        tempList.Add(upperLeft);
-    //    if (upperRight != null)
-    //        tempList.Add(upperRight);
-
-    //    //2 bottom
-    //    var lowwerLeft = circlesPool.Find(obj => obj.PointIndex.x == x + offset && obj.PointIndex.y == y + 1);
-    //    var lowwerRight = circlesPool.Find(obj => obj.PointIndex.x == x && obj.PointIndex.y == y + 1);
-
-    //    if (lowwerLeft != null)
-    //        tempList.Add(lowwerLeft);
-    //    if (lowwerRight != null)
-    //        tempList.Add(lowwerRight);
-
-    //    return tempList;
-    //}
 
 }

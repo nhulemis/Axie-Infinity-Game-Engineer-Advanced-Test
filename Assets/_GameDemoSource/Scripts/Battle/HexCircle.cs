@@ -11,10 +11,10 @@ public class HexCircle : MonoBehaviour
 
     private void OnEnable()
     {
-        Blur(true);
+        SetBlur(true);
     }
 
-    public void Blur(bool b)
+    public void SetBlur(bool b)
     {
         blur.SetActive(b);
     }
@@ -22,13 +22,14 @@ public class HexCircle : MonoBehaviour
     public void OnPointerDown()
     {
         var battle = FindObjectOfType<BattleArea>();
-
-       var connected =  battle.GetNearCircle(PointIndex , 6);
+        battle.RefreshCircle();
+        var connected =  battle.GetNearCircle(PointIndex , 6);
 
         foreach (var item in connected)
         {
-            item.GetComponent<SpriteRenderer>().color = Color.red;
+            item. SetBlur(false);
         }
+        GetComponent<SpriteRenderer>().color = Color.gray;
     }
 
     // Start is called before the first frame update
