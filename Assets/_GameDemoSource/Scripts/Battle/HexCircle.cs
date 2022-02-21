@@ -12,7 +12,12 @@ public class HexCircle : MonoBehaviour
     {
         var battle = FindObjectOfType<BattleArea>();
 
-        battle.GetNearCircle(PointIndex);
+       var connected =  battle.GetNearCircle(PointIndex);
+
+        foreach (var item in connected)
+        {
+            item.GetComponent<SpriteRenderer>().color = Color.red;
+        }
     }
 
     // Start is called before the first frame update
