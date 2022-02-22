@@ -15,18 +15,22 @@ public enum Team
 public abstract class Character : MonoBehaviour
 {
     public abstract Team Team { get; }
+    protected abstract void DecisionAction();
 
     [Header("Character Defination")]
     [SerializeField] protected int MaxHp;
     [SpineAnimation]
-    [SerializeField] string[] animations;
+    [SerializeField] string idle;
+    [SpineAnimation]
+    [SerializeField] string attack;
 
     [Header("UI View")]
     [SerializeField] Slider hpBar;
+    [SerializeField] Vector3 offsetPosition;
 
 
-    SkeletonAnimation skeletonAnimation;
-    Spine.AnimationState animationState;
+    private SkeletonAnimation skeletonAnimation;
+    public Spine.AnimationState AnimationState { get; private set; }
 
     private int hp;
     public int HP
@@ -62,6 +66,29 @@ public abstract class Character : MonoBehaviour
 
     public int Damage { get; set; }
 
+    private HexCircle owned;
+    public HexCircle Owned
+    {
+        get => owned;
+        set
+        {
+            if (owned == value)
+                return;
+            if (value != null)
+            {
+                owned = value;
+                owned.Owner = this;
+            }
+            else
+            {
+                owned.Owner = null;
+                owned = null;
+            }
+        }
+    }
+
+    private float deltaTime;
+    // public bool IsReadyToAction { get; set; }
 
     public void OnHpChanged(float value)
     {
@@ -69,7 +96,7 @@ public abstract class Character : MonoBehaviour
         int hpPercent = (int)(10f * value);
 
         hpBar.DOValue(value, 0.5f);
-        Debug.Log(hpPercent);
+       // Debug.Log(hpPercent);
         var hpFillter = hpBar.fillRect.GetComponent<Image>();
         if (hpPercent > 6)
         {
@@ -87,20 +114,22 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-        HP = MaxHp;
-        RandomNumber = Random.Range(0, 3);
+        
         skeletonAnimation = GetComponent<SkeletonAnimation>();
-        animationState = skeletonAnimation.AnimationState;
+        AnimationState = skeletonAnimation.AnimationState;
     }
 
-    int animIndex = 0;
+    public void Init(HexCircle hex)
+    {
+        HP = MaxHp;
+        RandomNumber = Random.Range(0, 3);
+        Owned = hex;
+        transform.position = hex.GetPosition() + offsetPosition;
+    }
+
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            animIndex++;
-            animationState.SetAnimation(0, animations[animIndex], true);
-        }
+        
     }
 
     public void CalcDamage()
@@ -121,5 +150,43 @@ public abstract class Character : MonoBehaviour
                 this.Damage = 3;
                 break;
         }
+    }
+
+    protected virtual void FixedUpdate()
+    {
+
+        deltaTime += Time.fixedDeltaTime;
+        if (deltaTime >= 1)
+        {
+            deltaTime -= 1;
+            //IsReadyToAction = true;
+            DecisionAction();
+        }
+    }
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    public float DistanceWith(Character other)
+    {
+        return Vector3.Distance(GetPosition(), other.GetPosition());
+    }
+
+    public float DistanceWith(Vector3 other)
+    {
+        return Vector3.Distance(GetPosition(), other);
+    }
+
+    public void Attack(Character target)
+    {
+        Target = target;
+        AnimationState.SetAnimation(0, attack, false);
+    }
+
+    public void Idle()
+    {
+        AnimationState.SetAnimation(0, idle, true);
     }
 }

@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
             if (target != hex)
             {
                 target = hex;
-                target.OnPointerDown();
+               // target.OnPointerDown();
             }
         }
 

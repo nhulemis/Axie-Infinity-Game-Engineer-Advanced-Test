@@ -6,6 +6,11 @@ public class Defender : Character
 {
     public override Team Team => Team.Defense;
 
+    protected override void DecisionAction()
+    {
+        
+    }
+
     // Start is called before the first frame update
     void Start()
     {

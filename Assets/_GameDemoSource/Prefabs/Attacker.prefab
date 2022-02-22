@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 3149573560019623929}
   - component: {fileID: 6144913322434395453}
   m_Layer: 5
-  m_Name: Slider
+  m_Name: hp-bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -512,7 +512,7 @@ MonoBehaviour:
   calculateTangents: 0
   logErrors: 0
   disableRenderingOnOverride: 1
-  _animationName: action/victory-pose-back-flip
+  _animationName: action/idle
   loop: 1
   timeScale: 1
 --- !u!114 &1433022802414979823
@@ -528,9 +528,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxHp: 10
-  skeletonAnimation: {fileID: 7292681472986305032}
-  animations:
-  - {fileID: 11400000, guid: 70345584908741a4aac7503ef24ede21, type: 2}
-  - {fileID: 11400000, guid: 7ed5cfcf22646ed4486693d70a1196a5, type: 2}
-  - {fileID: 11400000, guid: 84ff3076bf3fea245bbb8931851ba2d1, type: 2}
+  idle: action/idle
+  attack: action/move-forward
   hpBar: {fileID: 8285961400006593465}
+  offsetPosition: {x: 0, y: -3.45, z: 0}
+  move: action/entrance

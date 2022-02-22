@@ -6,8 +6,10 @@ using UnityEngine.EventSystems;
 
 public class HexCircle : MonoBehaviour
 {
-    public Point PointIndex { get; set; }
     [SerializeField] GameObject blur;
+
+    public Point PointIndex { get; set; }
+    public Character Owner { get; set; }
 
     private void OnEnable()
     {
@@ -21,15 +23,23 @@ public class HexCircle : MonoBehaviour
 
     public void OnPointerDown()
     {
-        var battle = FindObjectOfType<BattleArea>();
-        battle.RefreshCircle();
-        var connected =  battle.GetNearCircle(PointIndex , 6);
+        var connected = GetNeighbor(1);
 
         foreach (var item in connected)
         {
             item. SetBlur(false);
         }
         GetComponent<SpriteRenderer>().color = Color.gray;
+    }
+
+    public List<HexCircle> GetNeighbor(int radius)
+    {
+        return GM.BattleArea.GetNeighbor(PointIndex, radius);
+    }
+
+    public Vector3 GetPosition()
+    {
+       return transform.position;
     }
 
     // Start is called before the first frame update

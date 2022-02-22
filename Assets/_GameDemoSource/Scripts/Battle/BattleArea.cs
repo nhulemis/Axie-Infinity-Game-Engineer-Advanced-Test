@@ -10,20 +10,24 @@ public class BattleArea : MonoBehaviour
     [SerializeField] float gap;
     [SerializeField] int battleRadius = 11;
     [SerializeField] Transform gridParent;
+
+    [Header("Team Attack")]
+    [SerializeField] Transform attackParent;
+    [SerializeField] Character attackerPrefab;
+
+    [Header("Team Defense")]
+    [SerializeField] Transform defenseParent;
+    [SerializeField] Character defenderPrefab;
+
+    [HideInInspector]
+    public List<HexCircle> circlesPool;
+
+
     int gridWidth, gridHeight;
     int seatsOnRow;
     Vector2 startPos;
     Vector2 circleSize;
-
-    [Header("Team Attack")]
-    [SerializeField] Transform attackParent;
-
-
-    [Header("Team Defense")]
-    [SerializeField] Transform defenseParent;
-
-    [HideInInspector]
-    public List<HexCircle> circlesPool;
+    List<Character> attakers, defenders;
 
     // Start is called before the first frame update
     void Start()
@@ -34,12 +38,40 @@ public class BattleArea : MonoBehaviour
         AddGap();
         CalcStartPos();
         GenerateBattleArea();
+        InitCharacter();
+        GM.BattleArea = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void InitCharacter()
     {
+        int teamRadius = 2;
+        int ignoreRadius = teamRadius + 1;
 
+        var middleIndex = circlesPool.Count / 2;
+        Point middlePoint = circlesPool[middleIndex].PointIndex;
+
+        // Init Defender
+        defenders = new List<Character>();
+        var defenseArea = GetNeighbor(middlePoint, teamRadius);
+
+        foreach (var def in defenseArea)
+        {
+            var go = Instantiate(defenderPrefab, attackParent);
+            go.Init(def);
+            defenders.Add(go);
+        }
+
+        // Init Attacker
+        attakers = new List<Character>();
+        var ignore = GetNeighbor(middlePoint, ignoreRadius);
+        var attackArea = GetNeighbor(middlePoint, ignoreRadius + teamRadius).Except(ignore);
+
+        foreach (var atkHex in attackArea)
+        {
+            var go = Instantiate(attackerPrefab, attackParent);
+            go.Init(atkHex);
+            attakers.Add(go);
+        }
     }
 
     private void NewCircle(int x, int y, Vector2 pos)
@@ -137,12 +169,12 @@ public class BattleArea : MonoBehaviour
         }
     }
 
-    public List<HexCircle> GetNearCircle(Point p, int takeRadius = 1)
+    public List<HexCircle> GetNeighbor(Point p, int takeRadius = 1)
     {
-        return GetNearCircle(p.x, p.y, takeRadius);
+        return GetNeighbor(p.x, p.y, takeRadius);
     }
 
-    private List<HexCircle> GetNearCircle(int x, int y, int takeRadius)
+    private List<HexCircle> GetNeighbor(int x, int y, int takeRadius)
     {
         var diameter = takeRadius * 2 + 1;
 
@@ -193,6 +225,18 @@ public class BattleArea : MonoBehaviour
             if (pick != null)
                 tempList.Add(pick);
         }
+    }
+
+    public List<Character> GetEnemies(Team enemyTeam)
+    {
+        switch (enemyTeam)
+        {
+            case Team.Attack:
+                break;
+            case Team.Defense:
+                return defenders;
+        }
+        return new List<Character>();
     }
 
 }

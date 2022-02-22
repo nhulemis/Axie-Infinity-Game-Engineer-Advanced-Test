@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour
 {
     static GameManager instance;
     public static GameManager Instance => instance;
+
+    public BattleArea battleArea;
+
     private void Awake()
     {
         if (instance != null)
@@ -31,5 +34,9 @@ public class GameManager : MonoBehaviour
 
 public static class GM
 {
-
+    public static BattleArea BattleArea
+    {
+        get => GameManager.Instance.battleArea;
+        set => GameManager.Instance.battleArea = value;
+    }
 }
