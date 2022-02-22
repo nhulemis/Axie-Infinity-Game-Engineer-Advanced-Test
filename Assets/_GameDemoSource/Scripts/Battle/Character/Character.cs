@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using Spine.Unity;
+using UnityEngine.Assertions;
 
 public enum Team
 {
@@ -17,8 +18,15 @@ public abstract class Character : MonoBehaviour
 
     [Header("Character Defination")]
     [SerializeField] protected int MaxHp;
-    [SerializeField] SkeletonAnimation skeletonAnimation;
-    [SerializeField] AnimationReferenceAsset[] animations;
+    [SpineAnimation]
+    [SerializeField] string[] animations;
+
+    [Header("UI View")]
+    [SerializeField] Slider hpBar;
+
+
+    SkeletonAnimation skeletonAnimation;
+    Spine.AnimationState animationState;
 
     private int hp;
     public int HP
@@ -31,10 +39,29 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    protected int rankdomNumber;
+    private int rankdomNumber;
+    public int RandomNumber
+    {
+        get => rankdomNumber;
+        set => rankdomNumber = value;
+    }
 
-    [Header("UI View")]
-    [SerializeField] Slider hpBar;
+    private Character target;
+    public Character Target
+    {
+        get => target;
+        set
+        {
+            if (target == value)
+                return;
+
+            target = value;
+            CalcDamage();
+        }
+    }
+
+    public int Damage { get; set; }
+
 
     public void OnHpChanged(float value)
     {
@@ -61,8 +88,9 @@ public abstract class Character : MonoBehaviour
     protected virtual void Start()
     {
         HP = MaxHp;
-        rankdomNumber = Random.Range(0, 3);
-
+        RandomNumber = Random.Range(0, 3);
+        skeletonAnimation = GetComponent<SkeletonAnimation>();
+        animationState = skeletonAnimation.AnimationState;
     }
 
     int animIndex = 0;
@@ -71,7 +99,27 @@ public abstract class Character : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             animIndex++;
-            skeletonAnimation.AnimationState.SetAnimation(0, animations[animIndex], true);
+            animationState.SetAnimation(0, animations[animIndex], true);
+        }
+    }
+
+    public void CalcDamage()
+    {
+        Assert.IsNotNull(Target, "Target is null");
+
+        int offset = (3 + this.RandomNumber - Target.RandomNumber) % 3;
+
+        switch (offset)
+        {
+            case 0:
+                this.Damage = 4;
+                break;
+            case 1:
+                this.Damage = 5;
+                break;
+            default:
+                this.Damage = 3;
+                break;
         }
     }
 }

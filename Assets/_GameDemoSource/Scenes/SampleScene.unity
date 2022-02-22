@@ -768,6 +768,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1433022802414979823, guid: 8f7c57ed8ee93e84dbbefdbb68f7cf72, type: 3}
+      propertyPath: animations.Array.data[0]
+      value: action/idle
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433022802414979823, guid: 8f7c57ed8ee93e84dbbefdbb68f7cf72, type: 3}
+      propertyPath: animations.Array.data[1]
+      value: action/move-forward
+      objectReference: {fileID: 0}
+    - target: {fileID: 1433022802414979823, guid: 8f7c57ed8ee93e84dbbefdbb68f7cf72, type: 3}
+      propertyPath: animations.Array.data[2]
+      value: action/victory-pose-back-flip
+      objectReference: {fileID: 0}
     - target: {fileID: 7292681472986305034, guid: 8f7c57ed8ee93e84dbbefdbb68f7cf72, type: 3}
       propertyPath: m_Mesh
       value: 
