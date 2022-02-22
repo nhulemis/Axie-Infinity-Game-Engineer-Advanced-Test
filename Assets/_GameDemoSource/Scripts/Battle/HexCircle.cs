@@ -57,7 +57,7 @@ public class HexCircle : MonoBehaviour
         GetComponent<SpriteRenderer>().color = Color.black;
     }
 
-    public List<HexCircle> GetNeighbor(int radius)
+    public List<HexCircle> GetNeighbor(int radius = 1)
     {
         return GM.BattleArea.GetNeighbor(PointIndex, radius);
     }

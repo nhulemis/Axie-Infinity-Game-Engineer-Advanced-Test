@@ -16,7 +16,9 @@ public enum ActionStage
 {
     Idle,
     Move,
-    Attack
+    Attack,
+    Victory
+        
 }
 
 public abstract class Character : MonoBehaviour
@@ -46,7 +48,6 @@ public abstract class Character : MonoBehaviour
         {
             oldStage = actionStage;
             actionStage = value;
-            Action();
         }
     }
 
@@ -248,11 +249,11 @@ public abstract class Character : MonoBehaviour
         {
             if (ActionStage == ActionStage.Attack)
             {
-                AnimationState.SetAnimation(0, attack, true);
+                SetAnimation(attack);
             }
             else
             {
-                AnimationState.SetAnimation(0, idle, true);
+                SetAnimation(idle);
             }
         }
 
@@ -284,6 +285,11 @@ public abstract class Character : MonoBehaviour
 
     public void VictoryPose()
     {
-        AnimationState.SetAnimation(0, victory, true);
+        SetAnimation(victory);
+    }
+
+    protected void SetAnimation(string animName)
+    {
+        //AnimationState.SetAnimation(0, animName, true);
     }
 }

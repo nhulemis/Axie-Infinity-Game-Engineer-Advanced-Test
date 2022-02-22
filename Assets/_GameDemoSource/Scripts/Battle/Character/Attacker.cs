@@ -34,50 +34,51 @@ public class Attacker : Character
     protected override void DecisionAction()
     {
         if (CircleOwned == null) return;
-       
 
-        var circlesAround = CircleOwned.GetNeighbor(1);
+        var circlesAround = CircleOwned.GetNeighbor();
         var neighbors = circlesAround.Select(c => c.Owner).Where(c=>c != null && c.Team == Team.Defense).ToList();
 
         if (neighbors.Count > 0) // attack
         {
             var pickOneEnemy = Random.Range(0, neighbors.Count);
             Attack(neighbors[pickOneEnemy]);
-            return;
         }
-
-        var enemy = GetNearestEnemy();
-
-        if (enemy == null)
+        else // Move Or Idle
         {
-            ActionStage = ActionStage.Idle;
-            return;
-        }
+            var enemy = GetNearestEnemy();
 
-        float minDistance = 999999f;
-        bool isFoundWay = false;
-
-        //var canMoves = circlesAround.Where(c => c.Owner == null);
-
-        foreach (var c in circlesAround)
-        {
-            var distance = enemy.DistanceWith(c.GetPosition());
-            if (distance < minDistance)
+            if (enemy == null)
             {
-                minDistance = distance;
-                moveTo = c;
-                isFoundWay = true;
+                ActionStage = ActionStage.Idle;
+            }
+            else
+            {
+                float minDistance = 999999f;
+                bool isFoundWay = false;
+
+                foreach (var c in circlesAround)
+                {
+                    var distance = enemy.DistanceWith(c.GetPosition());
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        moveTo = c;
+                        isFoundWay = true;
+                    }
+                }
+                if (isFoundWay && moveTo.Owner == null)
+                {
+                    moveTo.Owner = this;
+                    ActionStage = ActionStage.Move;
+                }
+                else
+                {
+                    ActionStage = ActionStage.Idle;
+                }
             }
         }
-        if (isFoundWay && moveTo.Owner == null)
-        {
-            moveTo.Owner = this;
-            ActionStage = ActionStage.Move;
-        }
-        else
-        {
-            ActionStage = ActionStage.Idle;
-        }
+
+        CallBackService.OnAddActor(this);
     }
 
     Character GetNearestEnemy()
@@ -110,7 +111,7 @@ public class Attacker : Character
         if (ActionStage == ActionStage.Move)
         {
             transform.DOMove(moveTo.GetPosition() + offsetPosition, 0.8f).onComplete = OnMoveComplete;
-            AnimationState.SetAnimation(0, move, true);
+            SetAnimation(move);
         }
     }
     void OnMoveComplete()

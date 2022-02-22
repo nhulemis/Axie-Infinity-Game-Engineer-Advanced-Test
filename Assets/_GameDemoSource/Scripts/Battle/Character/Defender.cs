@@ -17,8 +17,9 @@ public class Defender : Character
         {
             var pickOneEnemy = Random.Range(0, neighbors.Count);
             Attack(neighbors[pickOneEnemy]);
-            return;
         }
+
+        CallBackService.OnAddActor(this);
     }
 
 }

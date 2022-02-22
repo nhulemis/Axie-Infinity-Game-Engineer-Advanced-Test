@@ -28,9 +28,12 @@ public class BattleArea : MonoBehaviour
     Vector2 circleSize;
     List<Character> attakers, defenders;
 
+    Queue<Character> actorsQueue;
+
     // Start is called before the first frame update
     void Start()
     {
+        actorsQueue = new Queue<Character>();
         circlesPool = new List<HexCircle>();
         gridWidth = gridHeight = battleRadius;
         seatsOnRow = gridHeight / 2 + 1;
@@ -42,9 +45,38 @@ public class BattleArea : MonoBehaviour
         GameManager.Instance.battleArea = this;
     }
 
+    private void OnEnable()
+    {
+        CallBackService.OnAddActor += OnAddActor;
+
+    }
+
+    private void OnDisable()
+    {
+        CallBackService.OnAddActor -= OnAddActor;
+    }
+
+    void OnAddActor(Character actor)
+    {
+        actorsQueue.Enqueue(actor);
+    }
+
+    private void FixedUpdate()
+    {
+        if (actorsQueue.Count > 0)
+        {
+            var pickup = actorsQueue.Count > 20 ? 20 : actorsQueue.Count;
+            for (int i = 0; i < pickup; i++)
+            {
+                var go = actorsQueue.Dequeue();
+                go.Action();
+            }
+        }
+    }
+
     private void InitCharacter()
     {
-        int teamRadius = 2;
+        int teamRadius = 4;
         int ignoreRadius = teamRadius + 1;
 
         var middleIndex = circlesPool.Count / 2;
@@ -248,7 +280,7 @@ public class BattleArea : MonoBehaviour
             CallBackService.OnEndGame?.Invoke(Team.Attack);
             Victory(atk);
         }
-        else
+        else if(atk.Count == 0)
         {
             CallBackService.OnEndGame?.Invoke(Team.Defense);
             Victory(def);

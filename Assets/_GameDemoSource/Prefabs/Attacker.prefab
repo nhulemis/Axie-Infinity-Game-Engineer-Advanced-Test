@@ -530,6 +530,7 @@ MonoBehaviour:
   MaxHp: 10
   idle: action/idle
   attack: action/move-forward
+  victory: action/victory-pose-back-flip
   hpBar: {fileID: 8285961400006593465}
   offsetPosition: {x: 0, y: -3.45, z: 0}
   move: action/entrance
