@@ -11,6 +11,8 @@ public class HexCircle : MonoBehaviour
     public Point PointIndex { get; set; }
     public Character Owner { get; set; }
 
+    public bool IsInsideCameraView { get; set; }
+
     private void OnEnable()
     {
         SetBlur(true);
@@ -23,13 +25,36 @@ public class HexCircle : MonoBehaviour
 
     public void OnPointerDown()
     {
-        var connected = GetNeighbor(1);
+        //var connected = GetNeighbor(1);
+
+        //foreach (var item in connected)
+        //{
+        //    item. SetBlur(false);
+        //}
+        //GetComponent<SpriteRenderer>().color = Color.gray;
+    }
+
+    private void OnBecameInvisible()
+    {
+        IsInsideCameraView = false;
+    }
+
+    private void OnBecameVisible()
+    {
+        IsInsideCameraView = true;
+    }
+
+    internal void ClearBlur()
+    {
+        GM.BattleArea.RefreshCircle();
+
+        var connected = GetNeighbor(6);
 
         foreach (var item in connected)
         {
-            item. SetBlur(false);
+            item.SetBlur(false);
         }
-        GetComponent<SpriteRenderer>().color = Color.gray;
+        GetComponent<SpriteRenderer>().color = Color.black;
     }
 
     public List<HexCircle> GetNeighbor(int radius)
@@ -40,18 +65,6 @@ public class HexCircle : MonoBehaviour
     public Vector3 GetPosition()
     {
        return transform.position;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DG.Tweening;
 
 public class Attacker : Character
 {
@@ -13,7 +14,7 @@ public class Attacker : Character
     [SerializeField] string move;
 
 
-    Vector3 moveTo;
+    HexCircle moveTo;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -32,8 +33,11 @@ public class Attacker : Character
 
     protected override void DecisionAction()
     {
-        var circlesAround = Owned.GetNeighbor(1);
-        var neighbors = circlesAround.Select(c => c.Owner).Where(c=>c != null && Team == Team.Defense).ToList();
+        if (CircleOwned == null) return;
+       
+
+        var circlesAround = CircleOwned.GetNeighbor(1);
+        var neighbors = circlesAround.Select(c => c.Owner).Where(c=>c != null && c.Team == Team.Defense).ToList();
 
         if (neighbors.Count > 0) // attack
         {
@@ -42,49 +46,78 @@ public class Attacker : Character
             return;
         }
 
-        //var enemy = GetNearestEnemy();
-        //float minDistance = 999999f;
-        //bool isFoundWay = false;
+        var enemy = GetNearestEnemy();
+
+        if (enemy == null)
+        {
+            ActionStage = ActionStage.Idle;
+            return;
+        }
+
+        float minDistance = 999999f;
+        bool isFoundWay = false;
 
         //var canMoves = circlesAround.Where(c => c.Owner == null);
 
-        //foreach (var c in canMoves)
-        //{
-        //    var distance = DistanceWith(c.GetPosition());
-        //    if (distance < minDistance)
-        //    {
-        //        minDistance = distance;
-        //        moveTo = c.GetPosition();
-        //        isFoundWay = true;
-        //    }
-        //}
-        //if (isFoundWay)
-        //{
-        //    // action Move
-        //    AnimationState.SetAnimation(0, move, true);
-        //}
-        //else
-        //{
-        //    Idle();
-        //}
+        foreach (var c in circlesAround)
+        {
+            var distance = enemy.DistanceWith(c.GetPosition());
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                moveTo = c;
+                isFoundWay = true;
+            }
+        }
+        if (isFoundWay && moveTo.Owner == null)
+        {
+            moveTo.Owner = this;
+            ActionStage = ActionStage.Move;
+        }
+        else
+        {
+            ActionStage = ActionStage.Idle;
+        }
     }
 
     Character GetNearestEnemy()
     {
-        var enemies = GM.BattleArea.GetEnemies(Team.Defense);
+        List<Character> enemies = new List<Character>() ;
+        int radius = 1;
+        do
+        {
+            radius++;
+            enemies = GM.BattleArea.GetDefendersAround(CircleOwned.PointIndex, radius);
+        } while (enemies.Count == 0 && radius < 11);
 
+        Character tmp = null;
         float minDistance = 999999f;
-        Character target = null;
         foreach (var e in enemies)
         {
-            var distance = DistanceWith(e);
+            float distance = DistanceWith(e);
             if (distance < minDistance)
             {
                 minDistance = distance;
-                target = e;
+                tmp = e;
             }
         }
+        return tmp;
+    }
 
-        return target;
+    public override void Action()
+    {
+        base.Action();
+        if (ActionStage == ActionStage.Move)
+        {
+            transform.DOMove(moveTo.GetPosition() + offsetPosition, 0.8f).onComplete = OnMoveComplete;
+            AnimationState.SetAnimation(0, move, true);
+        }
+    }
+    void OnMoveComplete()
+    {
+        CircleOwned.Owner = null;
+
+        CircleOwned = moveTo;
+        ActionStage = ActionStage.Idle;
     }
 }

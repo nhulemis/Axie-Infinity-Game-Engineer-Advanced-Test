@@ -12,6 +12,13 @@ public enum Team
     Defense
 }
 
+public enum ActionStage
+{
+    Idle,
+    Move,
+    Attack
+}
+
 public abstract class Character : MonoBehaviour
 {
     public abstract Team Team { get; }
@@ -20,14 +27,28 @@ public abstract class Character : MonoBehaviour
     [Header("Character Defination")]
     [SerializeField] protected int MaxHp;
     [SpineAnimation]
-    [SerializeField] string idle;
+    [SerializeField] protected string idle;
     [SpineAnimation]
-    [SerializeField] string attack;
+    [SerializeField] protected string attack;
+    [SpineAnimation]
+    [SerializeField] protected string victory;
 
     [Header("UI View")]
     [SerializeField] Slider hpBar;
-    [SerializeField] Vector3 offsetPosition;
+    [SerializeField] protected Vector3 offsetPosition;
 
+    protected ActionStage oldStage;
+    private ActionStage actionStage;
+    public ActionStage ActionStage
+    {
+        get => actionStage;
+        set
+        {
+            oldStage = actionStage;
+            actionStage = value;
+            Action();
+        }
+    }
 
     private SkeletonAnimation skeletonAnimation;
     public Spine.AnimationState AnimationState { get; private set; }
@@ -39,7 +60,8 @@ public abstract class Character : MonoBehaviour
         set
         {
             hp = value;
-            OnHpChanged(HP / MaxHp);
+            OnHpChanged((float)HP / MaxHp);
+            CheckAndActionDie();
         }
     }
 
@@ -67,36 +89,28 @@ public abstract class Character : MonoBehaviour
     public int Damage { get; set; }
 
     private HexCircle owned;
-    public HexCircle Owned
+    public HexCircle CircleOwned
     {
         get => owned;
         set
         {
             if (owned == value)
                 return;
-            if (value != null)
-            {
-                owned = value;
-                owned.Owner = this;
-            }
-            else
-            {
-                owned.Owner = null;
-                owned = null;
-            }
+            owned = value;
         }
     }
 
     private float deltaTime;
+    private bool isVisible;
     // public bool IsReadyToAction { get; set; }
-
+    Coroutine coroutine;
     public void OnHpChanged(float value)
     {
         Color[] hpColor = new Color[] { Color.red, Color.yellow, Color.green };
         int hpPercent = (int)(10f * value);
 
         hpBar.DOValue(value, 0.5f);
-       // Debug.Log(hpPercent);
+
         var hpFillter = hpBar.fillRect.GetComponent<Image>();
         if (hpPercent > 6)
         {
@@ -112,9 +126,38 @@ public abstract class Character : MonoBehaviour
         }
     }
 
+    public void CheckAndActionDie()
+    {
+        if (HP <= 0 && gameObject.activeSelf)
+        {
+            if (CircleOwned != null)
+            {
+                CircleOwned.Owner = null;
+                // CircleOwned = null;
+            }
+            StartCoroutine(DieBehavior());
+        }
+    }
+
+    IEnumerator DieBehavior()
+    {
+        yield return null;
+        skeletonAnimation.skeleton.A = 0;
+
+        for (int i = 0; i < 5; i++)
+        {
+            skeletonAnimation.skeleton.A = i % 2;
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        yield return new WaitForEndOfFrame();
+        gameObject.SetActive(false);
+        GM.BattleArea.CheckGameOver();
+    }
+
     protected virtual void Start()
     {
-        
+
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         AnimationState = skeletonAnimation.AnimationState;
     }
@@ -123,13 +166,28 @@ public abstract class Character : MonoBehaviour
     {
         HP = MaxHp;
         RandomNumber = Random.Range(0, 3);
-        Owned = hex;
+        CircleOwned = hex;
+        CircleOwned.Owner = this;
         transform.position = hex.GetPosition() + offsetPosition;
+        actionStage = ActionStage.Idle;
+
+        coroutine = StartCoroutine(BehaviouEverySecond());
+    }
+
+    IEnumerator BehaviouEverySecond()
+    {
+        yield return new WaitForSeconds(2);
+
+        while (Application.isPlaying && !GM.IsEndGame)
+        {
+            DecisionAction();
+            yield return new WaitForSeconds(1);
+        }
     }
 
     protected virtual void Update()
     {
-        
+
     }
 
     public void CalcDamage()
@@ -154,14 +212,13 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-
-        deltaTime += Time.fixedDeltaTime;
-        if (deltaTime >= 1)
-        {
-            deltaTime -= 1;
-            //IsReadyToAction = true;
-            DecisionAction();
-        }
+        //deltaTime += Time.fixedDeltaTime;
+        //if (deltaTime >= 1)
+        //{
+        //    deltaTime -= 1;
+        //    //IsReadyToAction = true;
+        //    DecisionAction();
+        //}
     }
 
     public Vector3 GetPosition()
@@ -182,11 +239,51 @@ public abstract class Character : MonoBehaviour
     public void Attack(Character target)
     {
         Target = target;
-        AnimationState.SetAnimation(0, attack, false);
+        ActionStage = ActionStage.Attack;
     }
 
-    public void Idle()
+    public virtual void Action()
     {
-        AnimationState.SetAnimation(0, idle, true);
+        if (oldStage != ActionStage && isVisible) // set change anim if changed stage
+        {
+            if (ActionStage == ActionStage.Attack)
+            {
+                AnimationState.SetAnimation(0, attack, true);
+            }
+            else
+            {
+                AnimationState.SetAnimation(0, idle, true);
+            }
+        }
+
+        if (ActionStage == ActionStage.Attack)
+        {
+            Target.TakeDamaged(this.Damage);
+        }
+    }
+
+    private void TakeDamaged(int damage)
+    {
+       // Debug.Log(damage);
+        HP -= damage;
+    }
+
+    private void OnBecameInvisible()
+    {
+        isVisible = false;
+    }
+    private void OnBecameVisible()
+    {
+        isVisible = true;
+    }
+
+    public bool IsActive()
+    {
+        return gameObject.activeSelf;
+    }
+
+    public void VictoryPose()
+    {
+        AnimationState.SetAnimation(0, victory, true);
     }
 }

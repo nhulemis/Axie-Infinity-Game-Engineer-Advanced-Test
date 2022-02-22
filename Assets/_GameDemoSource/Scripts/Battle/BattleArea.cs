@@ -22,7 +22,6 @@ public class BattleArea : MonoBehaviour
     [HideInInspector]
     public List<HexCircle> circlesPool;
 
-
     int gridWidth, gridHeight;
     int seatsOnRow;
     Vector2 startPos;
@@ -39,7 +38,8 @@ public class BattleArea : MonoBehaviour
         CalcStartPos();
         GenerateBattleArea();
         InitCharacter();
-        GM.BattleArea = this;
+
+        GameManager.Instance.battleArea = this;
     }
 
     private void InitCharacter()
@@ -48,6 +48,7 @@ public class BattleArea : MonoBehaviour
         int ignoreRadius = teamRadius + 1;
 
         var middleIndex = circlesPool.Count / 2;
+        Debug.Log(circlesPool.Count + " ---- " + middleIndex);
         Point middlePoint = circlesPool[middleIndex].PointIndex;
 
         // Init Defender
@@ -56,7 +57,7 @@ public class BattleArea : MonoBehaviour
 
         foreach (var def in defenseArea)
         {
-            var go = Instantiate(defenderPrefab, attackParent);
+            var go = Instantiate(defenderPrefab, defenseParent);
             go.Init(def);
             defenders.Add(go);
         }
@@ -162,7 +163,9 @@ public class BattleArea : MonoBehaviour
 
     public void RefreshCircle()
     {
-        foreach (var item in circlesPool)
+        var insides = circlesPool.Where(hex => hex.IsInsideCameraView).ToList();
+
+        foreach (var item in insides)
         {
             item.GetComponent<SpriteRenderer>().color = Color.white;
             item.SetBlur(true);
@@ -174,7 +177,7 @@ public class BattleArea : MonoBehaviour
         return GetNeighbor(p.x, p.y, takeRadius);
     }
 
-    private List<HexCircle> GetNeighbor(int x, int y, int takeRadius)
+    private List<HexCircle> GetNeighbor(int x, int y, int takeRadius = 1)
     {
         var diameter = takeRadius * 2 + 1;
 
@@ -191,24 +194,23 @@ public class BattleArea : MonoBehaviour
             else
             {
                 coutOffet++;
-                if (coutOffet == 3)
+                if (coutOffet == 3) // calculate startX every 2 rows
                 {
                     if (y % 2 != 0)
                         startX -= 1;
                     else
                         startX += 1;
                     coutOffet = 1;
-
                 }
 
                 int offset = 0;
-                if (y % 2 == 0)
+                if (y % 2 == 0) // add 1 when picking row is even number
                     offset = 1;
 
                 PickupCircleInRow(startX + offset, y + t, diameter, ref tempList);
                 PickupCircleInRow(startX + offset, y - t, diameter, ref tempList);
 
-                if (y % 2 == 1)
+                if (y % 2 == 1)// add 1 when picking row is odd number
                     startX++;
             }
             diameter--;
@@ -227,16 +229,37 @@ public class BattleArea : MonoBehaviour
         }
     }
 
-    public List<Character> GetEnemies(Team enemyTeam)
+    public List<Character> GetDefendersAround(Point p, int radius)
     {
-        switch (enemyTeam)
-        {
-            case Team.Attack:
-                break;
-            case Team.Defense:
-                return defenders;
-        }
-        return new List<Character>();
+        var enemies = GetNeighbor(p, radius).Select(hex => hex.Owner).Where(x => x != null && x.Team == Team.Defense).ToList();
+        return enemies;
     }
 
+    public void CheckGameOver()
+    {
+        var def = defenders.Where(x => x.IsActive()).ToList();
+        var atk = attakers.Where(x => x.IsActive()).ToList();
+        if (def.Count == 0 && atk.Count == 0)
+        {
+            Debug.Log("peace");
+        }
+        else if (def.Count == 0)
+        {
+            CallBackService.OnEndGame?.Invoke(Team.Attack);
+            Victory(atk);
+        }
+        else
+        {
+            CallBackService.OnEndGame?.Invoke(Team.Defense);
+            Victory(def);
+        }
+    }
+
+    public void Victory(List<Character> winners)
+    {
+        foreach (var item in winners)
+        {
+            item.VictoryPose();
+        }
+    }
 }
