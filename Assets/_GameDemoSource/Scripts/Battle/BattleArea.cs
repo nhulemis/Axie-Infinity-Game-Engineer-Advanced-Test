@@ -65,7 +65,8 @@ public class BattleArea : MonoBehaviour
     {
         if (actorsQueue.Count > 0)
         {
-            var pickup = actorsQueue.Count > 20 ? 20 : actorsQueue.Count;
+            var pickup = actorsQueue.Count > GM.Define.actionCountInFrame ? 
+                GM.Define.actionCountInFrame : actorsQueue.Count;
             for (int i = 0; i < pickup; i++)
             {
                 var go = actorsQueue.Dequeue();
@@ -76,7 +77,8 @@ public class BattleArea : MonoBehaviour
 
     private void InitCharacter()
     {
-        int teamRadius = 4;
+        int teamRadius = GM.Define.teamSizeNormal;
+
         int ignoreRadius = teamRadius + 1;
 
         var middleIndex = circlesPool.Count / 2;

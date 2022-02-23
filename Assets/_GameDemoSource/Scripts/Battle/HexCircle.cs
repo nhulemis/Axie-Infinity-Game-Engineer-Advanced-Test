@@ -25,13 +25,7 @@ public class HexCircle : MonoBehaviour
 
     public void OnPointerDown()
     {
-        //var connected = GetNeighbor(1);
-
-        //foreach (var item in connected)
-        //{
-        //    item. SetBlur(false);
-        //}
-        //GetComponent<SpriteRenderer>().color = Color.gray;
+        Owner?.OnPointerDown();
     }
 
     private void OnBecameInvisible()

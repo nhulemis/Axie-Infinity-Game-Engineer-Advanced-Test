@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88d8687d2d7c1554298da9313e7aa523, type: 3}
+  m_Name: game define
+  m_EditorClassIdentifier: 
+  popupInfo: {fileID: 5637151468744417278, guid: db81733fd60550b45918fd51e184ac92, type: 3}
+  teamSizeNormal: 2
+  teamSizeExtra: 4
+  actionCountInFrame: 20

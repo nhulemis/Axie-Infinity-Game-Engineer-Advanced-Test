@@ -8,9 +8,10 @@ public class GameManager : MonoBehaviour
     static GameManager instance;
     public static GameManager Instance => instance;
 
-    public BattleArea battleArea;
+    [HideInInspector] public BattleArea battleArea;
 
     [SerializeField] TextMeshProUGUI fps;
+    [SerializeField] public GameDefine gameDefine;
 
     float updateFPS = 2;
     float time = 0;
@@ -61,4 +62,6 @@ public static class GM
 {
     public static BattleArea BattleArea => GameManager.Instance.battleArea;
     public static bool IsEndGame => GameManager.Instance.isEndGame;
+
+    public static GameDefine Define => GameManager.Instance.gameDefine;
 }
