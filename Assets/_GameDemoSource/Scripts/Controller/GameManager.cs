@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector]  public int avgFrameRate;
     [HideInInspector]  public bool isEndGame;
     [HideInInspector]  public bool isPauseGame;
+    [HideInInspector] public int currentSpeed;
 
     private void Awake()
     {
@@ -36,14 +37,38 @@ public class GameManager : MonoBehaviour
     {
         isEndGame = false;
         isPauseGame = false;
+        currentSpeed = 1;
     }
     private void OnEnable()
     {
         CallBackService.OnEndGame += OnEndGame;
+        CallBackService.OnPauseGame += OnPauseGame;
+        CallBackService.OnResume += OnResume;
+        CallBackService.OnSpeedUp += OnSpeedUp;
     }
     private void OnDisable()
     {
         CallBackService.OnEndGame -= OnEndGame;
+        CallBackService.OnPauseGame -= OnPauseGame;
+        CallBackService.OnResume -= OnResume;
+        CallBackService.OnSpeedUp -= OnSpeedUp;
+    }
+
+    void OnPauseGame()
+    {
+        isPauseGame = true;
+    }
+
+    void OnResume()
+    {
+        isPauseGame = false;
+    }
+
+    void OnSpeedUp()
+    {
+        currentSpeed = currentSpeed == 1 ? 2 : 1;
+
+        Time.timeScale = currentSpeed;
     }
 
     void OnEndGame(Team winner)
@@ -68,4 +93,6 @@ public static class GM
     public static bool IsPauseGame => GameManager.Instance.isPauseGame;
 
     public static GameDefine Define => GameManager.Instance.gameDefine;
+
+    public static int CurrentGameSpeed => GameManager.Instance.currentSpeed;
 }

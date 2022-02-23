@@ -188,6 +188,7 @@ public abstract class Character : MonoBehaviour
 
         while (Application.isPlaying && !GM.IsEndGame)
         {
+            yield return new WaitUntil(()=>GM.IsPauseGame == false);
             DecisionAction();
             yield return new WaitForSeconds(1);
         }

@@ -63,7 +63,7 @@ public class BattleArea : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (actorsQueue.Count > 0)
+        if (actorsQueue.Count > 0 && GM.IsPauseGame == false)
         {
             var pickup = actorsQueue.Count > GM.Define.actionCountInFrame ? 
                 GM.Define.actionCountInFrame : actorsQueue.Count;
