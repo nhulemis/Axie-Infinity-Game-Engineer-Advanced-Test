@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: game define
   m_EditorClassIdentifier: 
   popupInfo: {fileID: 5637151468744417278, guid: db81733fd60550b45918fd51e184ac92, type: 3}
-  teamSizeNormal: 2
+  teamSizeNormal: 1
   teamSizeExtra: 4
   actionCountInFrame: 20

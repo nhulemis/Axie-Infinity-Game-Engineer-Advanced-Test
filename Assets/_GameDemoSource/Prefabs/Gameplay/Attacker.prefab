@@ -527,7 +527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35262eef2ef44b54d838bcff414719af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHp: 10
+  maxHp: 10
   idle: action/idle
   attack: action/move-forward
   victory: action/victory-pose-back-flip

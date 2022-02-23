@@ -271,8 +271,8 @@ public class BattleArea : MonoBehaviour
 
     public void CheckGameOver()
     {
-        var def = defenders.Where(x => x.IsActive()).ToList();
-        var atk = attakers.Where(x => x.IsActive()).ToList();
+        var def = defenders.Where(x => x.IsAlive()).ToList();
+        var atk = attakers.Where(x => x.IsAlive()).ToList();
         if (def.Count == 0 && atk.Count == 0)
         {
             Debug.Log("peace");

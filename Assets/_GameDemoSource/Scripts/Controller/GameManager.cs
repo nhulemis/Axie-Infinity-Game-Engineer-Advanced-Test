@@ -16,8 +16,10 @@ public class GameManager : MonoBehaviour
     float updateFPS = 2;
     float time = 0;
     int frame;
-    public int avgFrameRate;
-    public bool isEndGame;
+
+    [HideInInspector]  public int avgFrameRate;
+    [HideInInspector]  public bool isEndGame;
+    [HideInInspector]  public bool isPauseGame;
 
     private void Awake()
     {
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         isEndGame = false;
+        isPauseGame = false;
     }
     private void OnEnable()
     {
@@ -62,6 +65,7 @@ public static class GM
 {
     public static BattleArea BattleArea => GameManager.Instance.battleArea;
     public static bool IsEndGame => GameManager.Instance.isEndGame;
+    public static bool IsPauseGame => GameManager.Instance.isPauseGame;
 
     public static GameDefine Define => GameManager.Instance.gameDefine;
 }

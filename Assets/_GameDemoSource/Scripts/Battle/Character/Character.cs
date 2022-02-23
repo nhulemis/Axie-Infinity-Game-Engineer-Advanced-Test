@@ -27,7 +27,7 @@ public abstract class Character : MonoBehaviour
     protected abstract void DecisionAction();
 
     [Header("Character Defination")]
-    [SerializeField] protected int MaxHp;
+    [SerializeField] protected int maxHp;
     [SpineAnimation]
     [SerializeField] protected string idle;
     [SpineAnimation]
@@ -60,10 +60,16 @@ public abstract class Character : MonoBehaviour
         get => hp;
         set
         {
-            hp = value;
-            OnHpChanged((float)HP / MaxHp);
+            hp = Mathf.Clamp(value,0,999);
+            OnHpChanged((float)HP / maxHp);
             CheckAndActionDie();
         }
+    }
+
+    public int MaxHP
+    {
+        get => maxHp;
+        set => maxHp = value;
     }
 
     private int rankdomNumber;
@@ -72,7 +78,6 @@ public abstract class Character : MonoBehaviour
         get => rankdomNumber;
         set => rankdomNumber = value;
     }
-
     private Character target;
     public Character Target
     {
@@ -84,13 +89,12 @@ public abstract class Character : MonoBehaviour
 
             target = value;
             CalcDamage();
+            CallBackService.OnCharacterTargetChanged?.Invoke();
         }
     }
-
     public int Damage { get; set; }
 
     private HexCircle owned;
-
     private Canvas canvas;
     public HexCircle CircleOwned
     {
@@ -102,7 +106,6 @@ public abstract class Character : MonoBehaviour
             owned = value;
         }
     }
-
     private float deltaTime;
     private bool isVisible;
     // public bool IsReadyToAction { get; set; }
@@ -127,6 +130,7 @@ public abstract class Character : MonoBehaviour
         {
             hpFillter.color = hpColor[0];
         }
+        CallBackService.OnCharacterHPChanged?.Invoke();
     }
 
     public void CheckAndActionDie()
@@ -168,7 +172,7 @@ public abstract class Character : MonoBehaviour
 
     public void Init(HexCircle hex)
     {
-        HP = MaxHp;
+        HP = maxHp;
         RandomNumber = Random.Range(0, 3);
         CircleOwned = hex;
         CircleOwned.Owner = this;
@@ -196,7 +200,8 @@ public abstract class Character : MonoBehaviour
 
     public void CalcDamage()
     {
-        Assert.IsNotNull(Target, "Target is null");
+        if (Target == null)
+            return;
 
         int offset = (3 + this.RandomNumber - Target.RandomNumber) % 3;
 
@@ -212,6 +217,7 @@ public abstract class Character : MonoBehaviour
                 this.Damage = 3;
                 break;
         }
+        //Debug.Log("dmg: " + Damage);
     }
 
     protected virtual void FixedUpdate()
@@ -281,7 +287,7 @@ public abstract class Character : MonoBehaviour
         isVisible = true;
     }
 
-    public bool IsActive()
+    public bool IsAlive()
     {
         return gameObject.activeSelf;
     }
@@ -302,6 +308,6 @@ public abstract class Character : MonoBehaviour
         //popup.SetActive(true);
         popup.transform.localScale = Vector3.zero;
         popup.transform.SetParent(canvas.transform, false);
-        popup.GetComponent<PopupInfo>().OpenPopup(GetPosition());
+        popup.GetComponent<PopupInfo>().OpenPopup(this);
     }
 }

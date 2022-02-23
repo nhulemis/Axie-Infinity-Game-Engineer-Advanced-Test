@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eadfedf3895b464f83cacc65b357b2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHp: 30
+  maxHp: 30
   idle: action/idle
   attack: action/move-forward
   victory: action/victory-pose-back-flip
@@ -267,7 +267,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 3
   m_TargetDisplay: 0
 --- !u!114 &5301841565701369781
 MonoBehaviour:

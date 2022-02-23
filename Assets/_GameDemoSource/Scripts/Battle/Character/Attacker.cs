@@ -35,9 +35,27 @@ public class Attacker : Character
     {
         if (CircleOwned == null) return;
 
-        var circlesAround = CircleOwned.GetNeighbor();
-        var neighbors = circlesAround.Select(c => c.Owner).Where(c=>c != null && c.Team == Team.Defense).ToList();
 
+        if (Target != null)
+        {
+            if (!Target.IsAlive())
+            {
+                Target = null;
+            }
+        }
+
+        if (Target == null)
+        {
+            PickAction();
+        }
+
+        CallBackService.OnAddActor(this);
+    }
+
+    public void PickAction()
+    {
+        var circlesAround = CircleOwned.GetNeighbor();
+        var neighbors = circlesAround.Select(c => c.Owner).Where(c => c != null && c.Team == Team.Defense).ToList();
         if (neighbors.Count > 0) // attack
         {
             var pickOneEnemy = Random.Range(0, neighbors.Count);
@@ -77,8 +95,6 @@ public class Attacker : Character
                 }
             }
         }
-
-        CallBackService.OnAddActor(this);
     }
 
     Character GetNearestEnemy()
