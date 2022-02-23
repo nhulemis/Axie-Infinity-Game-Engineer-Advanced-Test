@@ -12,12 +12,12 @@ public class BattleArea : MonoBehaviour
     [SerializeField] Transform gridParent;
 
     [Header("Team Attack")]
-    [SerializeField] Transform attackParent;
-    [SerializeField] Character attackerPrefab;
+    [SerializeField] BattleTeam attackTeam;
+    public BattleTeam AttackTeam => attackTeam;
 
     [Header("Team Defense")]
-    [SerializeField] Transform defenseParent;
-    [SerializeField] Character defenderPrefab;
+    [SerializeField] BattleTeam defenseTeam;
+    public BattleTeam DefenseTeam => defenseTeam;
 
     [HideInInspector]
     public List<HexCircle> circlesPool;
@@ -26,7 +26,6 @@ public class BattleArea : MonoBehaviour
     int seatsOnRow;
     Vector2 startPos;
     Vector2 circleSize;
-    List<Character> attakers, defenders;
 
     Queue<Character> actorsQueue;
 
@@ -85,28 +84,9 @@ public class BattleArea : MonoBehaviour
         Debug.Log(circlesPool.Count + " ---- " + middleIndex);
         Point middlePoint = circlesPool[middleIndex].PointIndex;
 
-        // Init Defender
-        defenders = new List<Character>();
-        var defenseArea = GetNeighbor(middlePoint, teamRadius);
+        defenseTeam.Init(this, middlePoint, teamRadius);
 
-        foreach (var def in defenseArea)
-        {
-            var go = Instantiate(defenderPrefab, defenseParent);
-            go.Init(def);
-            defenders.Add(go);
-        }
-
-        // Init Attacker
-        attakers = new List<Character>();
-        var ignore = GetNeighbor(middlePoint, ignoreRadius);
-        var attackArea = GetNeighbor(middlePoint, ignoreRadius + teamRadius).Except(ignore);
-
-        foreach (var atkHex in attackArea)
-        {
-            var go = Instantiate(attackerPrefab, attackParent);
-            go.Init(atkHex);
-            attakers.Add(go);
-        }
+        attackTeam.Init(this, middlePoint, teamRadius , ignoreRadius);
     }
 
     private void NewCircle(int x, int y, Vector2 pos)
@@ -271,8 +251,8 @@ public class BattleArea : MonoBehaviour
 
     public void CheckGameOver()
     {
-        var def = defenders.Where(x => x.IsAlive()).ToList();
-        var atk = attakers.Where(x => x.IsAlive()).ToList();
+        var def = defenseTeam.TeamMember.Where(x => x.IsAlive()).ToList();
+        var atk = attackTeam.TeamMember.Where(x => x.IsAlive()).ToList();
         if (def.Count == 0 && atk.Count == 0)
         {
             Debug.Log("peace");

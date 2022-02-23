@@ -106,10 +106,8 @@ public abstract class Character : MonoBehaviour
             owned = value;
         }
     }
-    private float deltaTime;
     private bool isVisible;
-    // public bool IsReadyToAction { get; set; }
-    Coroutine coroutine;
+    private bool isAlive;
     public void OnHpChanged(float value)
     {
         Color[] hpColor = new Color[] { Color.red, Color.yellow, Color.green };
@@ -142,6 +140,7 @@ public abstract class Character : MonoBehaviour
                 CircleOwned.Owner = null;
                 // CircleOwned = null;
             }
+            isAlive = false;
             StartCoroutine(DieBehavior());
         }
     }
@@ -159,7 +158,9 @@ public abstract class Character : MonoBehaviour
 
         yield return new WaitForEndOfFrame();
         gameObject.SetActive(false);
+        
         GM.BattleArea.CheckGameOver();
+        CallBackService.OnTeamMemberChanged?.Invoke();
     }
 
     protected virtual void Start()
@@ -178,8 +179,8 @@ public abstract class Character : MonoBehaviour
         CircleOwned.Owner = this;
         transform.position = hex.GetPosition() + offsetPosition;
         actionStage = ActionStage.Idle;
-
-        coroutine = StartCoroutine(BehaviouEverySecond());
+        isAlive = true;
+        StartCoroutine(BehaviouEverySecond());
     }
 
     IEnumerator BehaviouEverySecond()
@@ -290,7 +291,7 @@ public abstract class Character : MonoBehaviour
 
     public bool IsAlive()
     {
-        return gameObject.activeSelf;
+        return isAlive;
     }
 
     public void VictoryPose()
