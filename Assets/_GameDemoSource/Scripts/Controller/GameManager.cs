@@ -72,6 +72,15 @@ public class GameManager : MonoBehaviour
         currentSpeed = currentSpeed == 1 ? 2 : 1;
 
         Time.timeScale = currentSpeed;
+
+        if (currentSpeed == 2)
+        {
+            GM.CamCtrl.PlaySpeedFx(true);
+        }
+        else
+        {
+            GM.CamCtrl.PlaySpeedFx(false);
+        }
     }
 
     void OnGiveUp()

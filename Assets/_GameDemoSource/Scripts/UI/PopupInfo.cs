@@ -20,6 +20,8 @@ public class PopupInfo : Popup
 
     [SerializeField]
     TextMeshProUGUI Title, lbHP, lbHPMax, lbRandom, lbDamage;
+    [SerializeField]
+    RectTransform mark;
 
     Character character;
 
@@ -71,8 +73,6 @@ public class PopupInfo : Popup
 
         randombar.DOValue(character.RandomNumber, 0.7f);
         lbRandom.text = $"{character.Damage } / 5";
-
-        SetContentPosition(charInfo.GetPosition());
     }
 
     private void SetContentPosition(Vector3 charPosition)
@@ -86,23 +86,41 @@ public class PopupInfo : Popup
 
         Vector2 newPosition = new Vector2(myPositionOnScreen.x / scaleFactor, myPositionOnScreen.y / scaleFactor) - offsetScreen;
 
+        mark.anchoredPosition = newPosition + new Vector2(0,mark.sizeDelta.y/2);
+
         if (newPosition.y > 0 && newPosition.x < 0)
         {
-            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2);
+            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * 1.5f;
         }
         else if (newPosition.y >= 0 && newPosition.x >= 0)
         {
-            newPosition += new Vector2(-content.sizeDelta.x / 2, -content.sizeDelta.y / 2);
+            newPosition += new Vector2(-content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * 1.5f;
         }
         else if (newPosition.y < 0 && newPosition.x < 0)
         {
-            newPosition += content.sizeDelta / 2;
+            newPosition += content.sizeDelta / 2 * 1.5f;
         }
         else if (newPosition.y <= 0 && newPosition.x > 0)
         {
-            newPosition += new Vector2(-content.sizeDelta.x / 2, content.sizeDelta.y / 2);
+            newPosition += new Vector2(-content.sizeDelta.x / 2, content.sizeDelta.y / 2) * 1.5f;
+        }
+        else
+        {
+            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * 1.5f;
         }
 
         content.anchoredPosition = newPosition;
+    }
+
+    public void LateUpdate()
+    {
+        if (character != null && character.IsAlive())
+        {
+            SetContentPosition(character.GetPosition());
+        }
+        else if (!character.IsAlive())
+        {
+            ClosePopup();
+        }
     }
 }

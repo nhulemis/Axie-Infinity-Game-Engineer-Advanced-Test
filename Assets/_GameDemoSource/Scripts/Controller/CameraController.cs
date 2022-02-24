@@ -22,6 +22,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] float minZoomClamp;
     [SerializeField] float maxZoomClamp;
 
+    [Header("Fx speed")]
+    [SerializeField] ParticleSystem speedFx;
 
     bool isDrag;
 
@@ -77,6 +79,18 @@ public class CameraController : MonoBehaviour
                 transform.DOMove(topRight, 5f)
             ).SetLoops(-1);
         sequenceFreeCam.Play();
+    }
+
+    internal void PlaySpeedFx(bool play)
+    {
+        if (play)
+        {
+            speedFx.Play();
+        }
+        else
+        {
+            speedFx.Stop();
+        }
     }
 
     // Update is called once per frame
