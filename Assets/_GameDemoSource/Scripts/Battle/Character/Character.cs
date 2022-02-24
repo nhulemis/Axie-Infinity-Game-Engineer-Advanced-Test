@@ -65,13 +65,11 @@ public abstract class Character : MonoBehaviour
             CheckAndActionDie();
         }
     }
-
     public int MaxHP
     {
         get => maxHp;
         set => maxHp = value;
     }
-
     private int rankdomNumber;
     public int RandomNumber
     {
@@ -95,7 +93,6 @@ public abstract class Character : MonoBehaviour
     public int Damage { get; set; }
 
     private HexCircle owned;
-    private Canvas canvas;
     public HexCircle CircleOwned
     {
         get => owned;
@@ -108,6 +105,7 @@ public abstract class Character : MonoBehaviour
     }
     private bool isVisible;
     private bool isAlive;
+
     public void OnHpChanged(float value)
     {
         Color[] hpColor = new Color[] { Color.red, Color.yellow, Color.green };
@@ -165,7 +163,6 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         AnimationState = skeletonAnimation.AnimationState;
@@ -306,10 +303,7 @@ public abstract class Character : MonoBehaviour
 
     public void OnPointerDown()
     {
-        var popup = Instantiate(GM.Define.popupInfo) as PopupInfo;
-        //popup.SetActive(true);
-        popup.transform.localScale = Vector3.zero;
-        popup.transform.SetParent(canvas.transform, false);
-        popup.GetComponent<PopupInfo>().OpenPopup(this);
+        var popup = GM.UI.OpenPopup<PopupInfo>();
+        popup.FillData(this);
     }
 }

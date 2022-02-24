@@ -17,6 +17,8 @@ public class BattleTeam : MonoBehaviour
 
     public void Init(BattleArea battleArea, Point middlePoint, int teamRadius, int ignoreRadius = 0)
     {
+        Clear();
+
         // Init Defender
         teamMember = new List<Character>();
 
@@ -36,9 +38,24 @@ public class BattleTeam : MonoBehaviour
         }
     }
 
+    private void Clear()
+    {
+        if (TeamMember != null)
+        {
+            for (int i = TeamMember.Count - 1; i >= 0; i--)
+            {
+                Destroy(TeamMember[i].gameObject);
+            }
+        }
+    }
+
     public int GetMembersAlive()
     {
         int count = teamMember.Where(x => x.IsAlive()).Count();
         return count;
+    }
+    public int GetTotalMember()
+    {
+        return teamMember.Count();
     }
 }

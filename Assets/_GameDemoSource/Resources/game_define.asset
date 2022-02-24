@@ -10,9 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88d8687d2d7c1554298da9313e7aa523, type: 3}
-  m_Name: game define
+  m_Name: game_define
   m_EditorClassIdentifier: 
-  popupInfo: {fileID: 5637151468744417278, guid: db81733fd60550b45918fd51e184ac92, type: 3}
+  specialPopups:
+  - {fileID: 5637151468744417278, guid: db81733fd60550b45918fd51e184ac92, type: 3}
+  - {fileID: 3397408425955559530, guid: 30de0c6c55dd0fd47b7a65f324281ce4, type: 3}
   teamSizeNormal: 2
   teamSizeExtra: 4
   actionCountInFrame: 20

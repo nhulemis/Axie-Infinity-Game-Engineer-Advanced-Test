@@ -38,7 +38,7 @@ public class HexCircle : MonoBehaviour
         IsInsideCameraView = true;
     }
 
-    internal void ClearBlur()
+    internal void ClearBlur(Color targetColor)
     {
         GM.BattleArea.RefreshCircle();
 
@@ -48,7 +48,7 @@ public class HexCircle : MonoBehaviour
         {
             item.SetBlur(false);
         }
-        GetComponent<SpriteRenderer>().color = Color.black;
+        GetComponent<SpriteRenderer>().color = targetColor;
     }
 
     public List<HexCircle> GetNeighbor(int radius = 1)

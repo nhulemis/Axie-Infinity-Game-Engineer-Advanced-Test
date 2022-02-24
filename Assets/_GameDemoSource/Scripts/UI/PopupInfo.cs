@@ -59,7 +59,7 @@ public class PopupInfo : Popup
         damage.DOValue(value, 0.7f);
     }
 
-    public void OpenPopup(Character charInfo)
+    public void FillData(Character charInfo)
     {
         character = charInfo;
 

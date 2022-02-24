@@ -12,16 +12,16 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI fps;
     [SerializeField] public GameDefine gameDefine;
+    [SerializeField] public UIController uIController;
+    [SerializeField] public CameraController cameraController;
+    [HideInInspector] public bool isEndGame;
+    [HideInInspector] public bool isPauseGame;
+    [HideInInspector] public int currentSpeed;
 
     float updateFPS = 2;
     float time = 0;
     int frame;
-
-    [HideInInspector]  public int avgFrameRate;
-    [HideInInspector]  public bool isEndGame;
-    [HideInInspector]  public bool isPauseGame;
-    [HideInInspector] public int currentSpeed;
-
+    int avgFrameRate;
     private void Awake()
     {
         if (instance != null)
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isEndGame = false;
+        isEndGame = true;
         isPauseGame = false;
         currentSpeed = 1;
     }
@@ -73,8 +73,23 @@ public class GameManager : MonoBehaviour
 
     void OnEndGame(Team winner)
     {
+        if (isEndGame)
+        {
+            return;
+        }
+
         Debug.Log(winner.ToString() + " wwin");
         isEndGame = true;
+        var endGamePopup = GM.UI.OpenPopup<PopupEndGame>();
+        endGamePopup.FillData(winner);
+    }
+
+    public void StartGame(int teamSize)
+    {
+       var middlePos = battleArea.InitCharacter(teamSize);
+        isEndGame = false;
+        CallBackService.OnTeamMemberChanged?.Invoke();
+        CallBackService.OnStartGame?.Invoke(middlePos);
     }
 
     // Update is called once per frame
@@ -93,6 +108,10 @@ public static class GM
     public static bool IsPauseGame => GameManager.Instance.isPauseGame;
 
     public static GameDefine Define => GameManager.Instance.gameDefine;
+    public static UIController UI => GameManager.Instance.uIController;
+    public static CameraController CamCtrl => GameManager.Instance.cameraController;
 
     public static int CurrentGameSpeed => GameManager.Instance.currentSpeed;
+
+    public static void StartGame(int teamsize) => GameManager.Instance.StartGame(teamsize);
 }

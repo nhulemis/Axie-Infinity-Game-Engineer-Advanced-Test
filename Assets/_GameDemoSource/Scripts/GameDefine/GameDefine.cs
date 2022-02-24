@@ -7,7 +7,15 @@ using UnityEngine;
 public class GameDefine : ScriptableObject
 {
     [Header("special popup")]
-    public PopupInfo popupInfo;
+    [SerializeField]
+    private List<Popup> specialPopups;
+
+    public T GET<T>() where T : Popup
+    {
+        var popup = specialPopups.Find(x => x is T);
+
+        return popup as T;
+    }
 
 
     [Header("Gameplay define")]

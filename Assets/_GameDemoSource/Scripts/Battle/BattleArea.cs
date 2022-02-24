@@ -39,7 +39,6 @@ public class BattleArea : MonoBehaviour
         AddGap();
         CalcStartPos();
         GenerateBattleArea();
-        InitCharacter();
 
         GameManager.Instance.battleArea = this;
     }
@@ -74,19 +73,21 @@ public class BattleArea : MonoBehaviour
         }
     }
 
-    private void InitCharacter()
+    public Vector3 InitCharacter(int teamSize)
     {
-        int teamRadius = GM.Define.teamSizeNormal;
-
-        int ignoreRadius = teamRadius + 1;
+        int ignoreRadius = teamSize + 1;
 
         var middleIndex = circlesPool.Count / 2;
         Debug.Log(circlesPool.Count + " ---- " + middleIndex);
-        Point middlePoint = circlesPool[middleIndex].PointIndex;
 
-        defenseTeam.Init(this, middlePoint, teamRadius);
+        var hexMiddle = circlesPool[middleIndex];
 
-        attackTeam.Init(this, middlePoint, teamRadius , ignoreRadius);
+        Point middlePoint = hexMiddle.PointIndex;
+
+        defenseTeam.Init(this, middlePoint, teamSize);
+
+        attackTeam.Init(this, middlePoint, teamSize, ignoreRadius);
+        return hexMiddle.GetPosition();
     }
 
     private void NewCircle(int x, int y, Vector2 pos)

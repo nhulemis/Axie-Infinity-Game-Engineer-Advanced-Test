@@ -23,9 +23,12 @@ public class PopupPower : MonoBehaviour
         int memberAtkTeam = GM.BattleArea.AttackTeam.GetMembersAlive();
         int memberDefTeam = GM.BattleArea.DefenseTeam.GetMembersAlive();
 
-        int sum = memberAtkTeam + memberDefTeam;
+        float percentAtkTeam = (float)memberAtkTeam / GM.BattleArea.AttackTeam.GetTotalMember();
+        float percentDefTeam = (float)memberDefTeam / GM.BattleArea.DefenseTeam.GetTotalMember();
 
-        float power = (float)memberAtkTeam / sum;
+        float sum = percentAtkTeam + percentDefTeam;
+
+        float power = (float)percentAtkTeam / sum;
 
        // Debug.Log("Power :" + power + $" || {memberAtkTeam} - {memberDefTeam}");
         powerBar.DOValue(power, 0.5f);
