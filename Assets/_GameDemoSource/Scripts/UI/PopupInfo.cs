@@ -10,6 +10,9 @@ public class PopupInfo : Popup
 {
     [SerializeField]
     RectTransform content;
+    [SerializeField] Color atkColor;
+    [SerializeField] Color defColor;
+
 
     [SerializeField]
     Slider hpbar;
@@ -74,6 +77,9 @@ public class PopupInfo : Popup
 
         randombar.DOValue(character.RandomNumber, 0.7f);
         lbRandom.text = $"{character.Damage } / 5";
+
+        var background = content.GetComponent<Image>();
+        background.color = character.Team == Team.Defense ? defColor : atkColor;
     }
 
     private void SetContentPosition(Vector3 charPosition)
@@ -87,7 +93,7 @@ public class PopupInfo : Popup
 
         Vector2 newPosition = new Vector2(myPositionOnScreen.x / scaleFactor, myPositionOnScreen.y / scaleFactor) - offsetScreen;
 
-        mark.anchoredPosition = newPosition + new Vector2(0, mark.sizeDelta.y / 2);
+        mark.anchoredPosition = newPosition + new Vector2(0, mark.sizeDelta.y / 3);
 
         if (newPosition.y > 0 && newPosition.x < 0)
         {

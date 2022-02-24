@@ -313,6 +313,7 @@ public abstract class Character : MonoBehaviour
 
     public void OnPointerDown()
     {
+        GM.CamCtrl.SetFov();
         var popup = GM.UI.OpenPopup<PopupInfo>();
         popup.FillData(this);
     }

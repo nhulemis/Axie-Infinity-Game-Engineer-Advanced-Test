@@ -170,6 +170,11 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    public void SetFov()
+    {
+        Camera.main.DOFieldOfView(60f , 0.5f);
+    }
+
     void MouseWheeling()
     {
 
