@@ -21,6 +21,8 @@ public enum ActionStage
         
 }
 
+[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(SkeletonAnimation))]
 public abstract class Character : MonoBehaviour
 {
     public abstract Team Team { get; }
@@ -39,6 +41,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] Slider hpBar;
     [SerializeField] protected Vector3 offsetPosition;
 
+    private AudioSource audioAtk;
     protected ActionStage oldStage;
     private ActionStage actionStage;
     public ActionStage ActionStage
@@ -166,6 +169,7 @@ public abstract class Character : MonoBehaviour
     {
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         AnimationState = skeletonAnimation.AnimationState;
+        audioAtk = GetComponent<AudioSource>();
     }
 
     public void Init(HexCircle hex)
@@ -273,6 +277,7 @@ public abstract class Character : MonoBehaviour
         if (ActionStage == ActionStage.Attack)
         {
             Target.TakeDamaged(this.Damage);
+            audioAtk.Play();
         }
     }
 
@@ -303,7 +308,7 @@ public abstract class Character : MonoBehaviour
 
     protected void SetAnimation(string animName)
     {
-        //AnimationState.SetAnimation(0, animName, true);
+        AnimationState.SetAnimation(0, animName, true);
     }
 
     public void OnPointerDown()

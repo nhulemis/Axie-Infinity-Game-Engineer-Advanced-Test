@@ -18,4 +18,4 @@ MonoBehaviour:
   teamSizeNormal: 2
   teamSizeExtra: 4
   actionCountInFrame: 27
-  startCooldown: 3
+  startCooldown: 1
