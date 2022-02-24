@@ -25,4 +25,7 @@ public class GameDefine : ScriptableObject
     [Range(10, 50)]
     public int actionCountInFrame = 20;
 
+    [SerializeField] float startCooldown;
+
+    public float StartCoolDownTime { get => startCooldown; }
 }

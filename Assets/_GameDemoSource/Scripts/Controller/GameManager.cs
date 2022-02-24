@@ -86,10 +86,17 @@ public class GameManager : MonoBehaviour
 
     public void StartGame(int teamSize)
     {
-       var middlePos = battleArea.InitCharacter(teamSize);
-        isEndGame = false;
+        var middlePos = battleArea.InitCharacter(teamSize);
+        StartCoroutine(StartGameAfter(GM.Define.StartCoolDownTime));
         CallBackService.OnTeamMemberChanged?.Invoke();
         CallBackService.OnStartGame?.Invoke(middlePos);
+    }
+
+    IEnumerator StartGameAfter(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        isEndGame = false;
     }
 
     // Update is called once per frame

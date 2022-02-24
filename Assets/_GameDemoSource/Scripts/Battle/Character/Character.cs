@@ -105,6 +105,7 @@ public abstract class Character : MonoBehaviour
     }
     private bool isVisible;
     private bool isAlive;
+    private float deltaTime;
 
     public void OnHpChanged(float value)
     {
@@ -163,7 +164,6 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Start()
     {
-
         skeletonAnimation = GetComponent<SkeletonAnimation>();
         AnimationState = skeletonAnimation.AnimationState;
     }
@@ -177,20 +177,20 @@ public abstract class Character : MonoBehaviour
         transform.position = hex.GetPosition() + offsetPosition;
         actionStage = ActionStage.Idle;
         isAlive = true;
-        StartCoroutine(BehaviouEverySecond());
+        //StartCoroutine(BehaviouEverySecond());
     }
 
-    IEnumerator BehaviouEverySecond()
-    {
-        yield return new WaitForSeconds(2);
+    //IEnumerator BehaviouEverySecond()
+    //{
+    //    yield return new WaitForSeconds(2);
 
-        while (Application.isPlaying && !GM.IsEndGame)
-        {
-            yield return new WaitUntil(()=>GM.IsPauseGame == false);
-            DecisionAction();
-            yield return new WaitForSeconds(1);
-        }
-    }
+    //    while (Application.isPlaying && !GM.IsEndGame)
+    //    {
+    //        yield return new WaitUntil(()=>GM.IsPauseGame == false);
+    //        DecisionAction();
+    //        yield return new WaitForSeconds(1);
+    //    }
+    //}
 
     protected virtual void Update()
     {
@@ -221,13 +221,18 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        //deltaTime += Time.fixedDeltaTime;
-        //if (deltaTime >= 1)
-        //{
-        //    deltaTime -= 1;
-        //    //IsReadyToAction = true;
-        //    DecisionAction();
-        //}
+        if (GM.IsEndGame || GM.IsPauseGame)
+        {
+            return;
+        }
+
+        deltaTime += Time.fixedDeltaTime;
+        if (deltaTime >= 1)
+        {
+            deltaTime = 0;
+            //IsReadyToAction = true;
+            DecisionAction();
+        }
     }
 
     public Vector3 GetPosition()

@@ -17,4 +17,5 @@ MonoBehaviour:
   - {fileID: 3397408425955559530, guid: 30de0c6c55dd0fd47b7a65f324281ce4, type: 3}
   teamSizeNormal: 2
   teamSizeExtra: 4
-  actionCountInFrame: 20
+  actionCountInFrame: 27
+  startCooldown: 3
