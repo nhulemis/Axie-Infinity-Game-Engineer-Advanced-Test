@@ -22,7 +22,8 @@ public class PopupInfo : Popup
     TextMeshProUGUI Title, lbHP, lbHPMax, lbRandom, lbDamage;
     [SerializeField]
     RectTransform mark;
-
+    [SerializeField]
+    float offetPopup = 1.2f;
     Character character;
 
     private void OnEnable()
@@ -86,27 +87,27 @@ public class PopupInfo : Popup
 
         Vector2 newPosition = new Vector2(myPositionOnScreen.x / scaleFactor, myPositionOnScreen.y / scaleFactor) - offsetScreen;
 
-        mark.anchoredPosition = newPosition + new Vector2(0,mark.sizeDelta.y/2);
+        mark.anchoredPosition = newPosition + new Vector2(0, mark.sizeDelta.y / 2);
 
         if (newPosition.y > 0 && newPosition.x < 0)
         {
-            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * 1.5f;
+            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * offetPopup;
         }
         else if (newPosition.y >= 0 && newPosition.x >= 0)
         {
-            newPosition += new Vector2(-content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * 1.5f;
+            newPosition += new Vector2(-content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * offetPopup;
         }
         else if (newPosition.y < 0 && newPosition.x < 0)
         {
-            newPosition += content.sizeDelta / 2 * 1.5f;
+            newPosition += content.sizeDelta / 2 * offetPopup;
         }
         else if (newPosition.y <= 0 && newPosition.x > 0)
         {
-            newPosition += new Vector2(-content.sizeDelta.x / 2, content.sizeDelta.y / 2) * 1.5f;
+            newPosition += new Vector2(-content.sizeDelta.x / 2, content.sizeDelta.y / 2) * offetPopup;
         }
         else
         {
-            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * 1.5f;
+            newPosition += new Vector2(content.sizeDelta.x / 2, -content.sizeDelta.y / 2) * offetPopup;
         }
 
         content.anchoredPosition = newPosition;

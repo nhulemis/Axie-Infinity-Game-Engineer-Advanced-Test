@@ -8,6 +8,16 @@ public class UIController : MonoBehaviour
 {
     private Canvas canvas;
 
+    Popup curent;
+
+    public void Clear()
+    {
+        if (curent != null)
+        {
+            curent.ClosePopup();
+        }
+    }
+
     private void Start()
     {
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
@@ -22,6 +32,7 @@ public class UIController : MonoBehaviour
 
     internal T OpenPopup<T>() where T : Popup
     {
+        Clear();
         var popupPrefab = GetSpecialPopup<T>();
 
         var popup = Instantiate(popupPrefab);
@@ -30,6 +41,8 @@ public class UIController : MonoBehaviour
         popup.transform.SetParent(canvas.transform, false);
 
         popup.GetComponent<T>().OpenPopup();
+
+        curent = popup;
         return popup;
     }
 

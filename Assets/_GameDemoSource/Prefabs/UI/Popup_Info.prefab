@@ -1104,7 +1104,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5637151468122908310
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1856,6 +1856,7 @@ MonoBehaviour:
   lbRandom: {fileID: 5637151468122908311}
   lbDamage: {fileID: 5637151469146526580}
   mark: {fileID: 3249674451548006469}
+  offetPopup: 1.25
 --- !u!82 &-7400465497545816918
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1969,7 +1970,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5637151469146526583
 RectTransform:
   m_ObjectHideFlags: 0
