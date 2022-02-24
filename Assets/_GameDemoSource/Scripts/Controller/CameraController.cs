@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System;
+using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour
 {
@@ -20,8 +21,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] float zoomSpeed = 50;
     [SerializeField] float minZoomClamp;
     [SerializeField] float maxZoomClamp;
-    float zoomAmount;
 
+
+    bool isDrag;
+
+    Vector3 offset;
+    Vector3 origin;
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +80,21 @@ public class CameraController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void LateUpdate()
+    {
+        //TargetAndClearBlur();
+
+        if (GM.IsEndGame)
+        {
+            return;
+        }
+
+        MouseWheeling();
+        MouseDrag();
+    }
+
+
+    private void TargetAndClearBlur()
     {
         var hit = Physics2D.Raycast(transform.position, transform.forward, 50f, targetRaycast);
         if (hit.collider != null)
@@ -87,19 +106,46 @@ public class CameraController : MonoBehaviour
                 target.ClearBlur(targetColor);
             }
         }
+    }
 
-        MouseWheeling();
+    private void MouseDrag()
+    {
+
+#if UNITY_ANDROID
+#else
+        if (Input.GetMouseButton(0))
+        {
+            var input = Input.mousePosition * -1;
+            input.z = transform.position.z;
+            offset = (Camera.main.ScreenToWorldPoint(input)) - Camera.main.transform.position;
+            if (isDrag == false)
+            {
+                isDrag = true;
+                origin = Camera.main.ScreenToWorldPoint(input);
+            }
+        }
+        else
+        {
+            isDrag = false;
+        }
+
+#endif
+        if (isDrag == true)
+        {
+            Camera.main.transform.position = origin - offset;
+        }
     }
 
     void MouseWheeling()
     {
+
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
             float wheel = Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
             float fov = Camera.main.fieldOfView;
             float fovClamp = Mathf.Clamp(fov + wheel, minZoomClamp, maxZoomClamp);
             Camera.main.fieldOfView = fovClamp;
-            
+
             //Refresh blur
             target = null;
         }
