@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
         CallBackService.OnPauseGame += OnPauseGame;
         CallBackService.OnResume += OnResume;
         CallBackService.OnSpeedUp += OnSpeedUp;
+        CallBackService.OnGiveUp += OnGiveUp;
+
     }
     private void OnDisable()
     {
@@ -52,6 +54,7 @@ public class GameManager : MonoBehaviour
         CallBackService.OnPauseGame -= OnPauseGame;
         CallBackService.OnResume -= OnResume;
         CallBackService.OnSpeedUp -= OnSpeedUp;
+        CallBackService.OnGiveUp -= OnGiveUp;
     }
 
     void OnPauseGame()
@@ -69,6 +72,11 @@ public class GameManager : MonoBehaviour
         currentSpeed = currentSpeed == 1 ? 2 : 1;
 
         Time.timeScale = currentSpeed;
+    }
+
+    void OnGiveUp()
+    {
+        isEndGame = true;
     }
 
     void OnEndGame(Team winner)

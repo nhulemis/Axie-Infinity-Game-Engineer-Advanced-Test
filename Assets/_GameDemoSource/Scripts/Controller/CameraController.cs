@@ -82,7 +82,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        //TargetAndClearBlur();
+        TargetAndClearBlur();
 
         if (GM.IsEndGame)
         {
@@ -112,6 +112,26 @@ public class CameraController : MonoBehaviour
     {
 
 #if UNITY_ANDROID
+        if (Input.touchCount > 0)
+        {
+            var touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
+            {
+                var input = new Vector3(touch.position.x, touch.position.y, 0) * -1;
+                input.z = transform.position.z;
+                offset = (Camera.main.ScreenToWorldPoint(input)) - Camera.main.transform.position;
+                if (isDrag == false)
+                {
+                    isDrag = true;
+                    origin = Camera.main.ScreenToWorldPoint(input);
+                }
+            }
+            else
+            {
+                isDrag = false;
+            }
+        }
 #else
         if (Input.GetMouseButton(0))
         {

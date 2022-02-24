@@ -6,8 +6,13 @@ public class PopupPauseGame : Popup
 {
     public void OnResumeGame()
     {
-        CallBackService.OnResume();
-        ClosePopup();
+        CallBackService.OnResume?.Invoke();
+    }
+
+    public void OnGiverUp()
+    {
+        CallBackService.OnResume?.Invoke();
+        CallBackService.OnGiveUp?.Invoke();
     }
 
     // Start is called before the first frame update

@@ -12,6 +12,7 @@ public delegate void OnPauseGame();
 public delegate void OnResume();
 public delegate void OnSpeedUp();
 public delegate void OnTeamMemberChanged();
+public delegate void OnGiveUp();
 public static class CallBackService
 {
     public static OnEndGame OnEndGame;
@@ -22,6 +23,7 @@ public static class CallBackService
     public static OnPauseGame OnPauseGame;
     public static OnResume OnResume;
     public static OnSpeedUp OnSpeedUp;
+    public static OnGiveUp OnGiveUp;
     public static OnTeamMemberChanged OnTeamMemberChanged;
 
 }

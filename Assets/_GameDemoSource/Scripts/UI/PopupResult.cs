@@ -7,7 +7,6 @@ public class PopupResult : Popup
     public void OnStartNormalGame() 
     {
         GM.StartGame(GM.Define.teamSizeNormal);
-
     }
 
     public void OnStartExtraGame()
